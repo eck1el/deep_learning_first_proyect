@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.utils import to_categorical
 
 from tensorflow.keras.models import Sequential  # Importamos Sequential para construir el modelo
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, BatchNormalization  # Capas necesarias para la CNN
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, BatchNormalization, Dropout  # Capas necesarias para la CNN
 
 # Deshabilitamos la verificación de SSL para evitar errores de certificado
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -100,17 +100,75 @@ def preprocesadoDatos():
     print(y_train)
 
 def crearRedNeuronal():
-    #Ulizamos el metodo sequential que  el standar para las CNN
+    #Inicializamos el modelo como un modelo secuencial CNN
     #Averiguamos que tipo de red debemos utilizar(cambia siempre dependiendo del proyecto)
     #Construimos la red por medio de capas y lo iniciamos con model = Sequential()
     model = Sequential()
 
-    #=========>Convulutional layer<================
-    #Añadimos la primera capa (Conv2D añade una capa convolucional)
+    # =======> Primera capa convolucional <=======
+    # Añadimos una capa Conv2D con 32 filtros y un kernel (ventana) de tamaño 3x3.
+    # input_shape define el tamaño de las imágenes de entrada: (32x32 píxeles con 3 canales RGB).
+    # Usamos 'relu' como función de activación para añadir no linealidad.
+    # 'same' asegura que la salida tenga el mismo tamaño que la entrada.
     model.add(Conv2D(filters = 32, kernel_size=(3, 3), input_shape=(32, 32, 3), activation='relu', padding='same'))
     #La normalizacion por Lotes es un metodo que se utiliza para hacer que las redes neuronales artificiales sean
     #mas rapidas y estables mediante la normalizacion de las entradas de las capas al volver a centrar y escalar
+
+    # Añadimos Batch Normalization para normalizar las salidas de la capa Conv2D.
+    # Esto acelera el entrenamiento y mejora la estabilidad de la red.
     model.add(BatchNormalization())
+
+    # =======> Segunda capa convolucional <=======
+    # Otra capa Conv2D con los mismos parámetros para aumentar la capacidad de extracción de características.
+    model.add(Conv2D(filters = 32, kernel_size=(3, 3), input_shape=(32, 32, 3), activation='relu', padding='same'))
+    model.add(BatchNormalization())
+
+    # =======> Capa de max-pooling <=======
+    # Añadimos MaxPooling2D para reducir la dimensionalidad de las características extraídas.
+    # pool_size=(2, 2) toma la ventana más grande de 2x2, reduciendo el tamaño de la entrada a la mitad.
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    #Dropout reduce el overfitting(Sobreajuste)
+    # =======> Dropout para reducir el sobreajuste <=======
+    # Dropout "apaga" aleatoriamente un 25% de las neuronas para evitar que el modelo se sobreajuste a los datos de entrenamiento.
+    model.add(Dropout(0.25))
+
+    # =======> Tercera capa convolucional <=======
+    # Incrementamos los filtros a 64 para capturar características más complejas.
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), input_shape=(32, 32, 3), activation='relu', padding='same'))
+    model.add(BatchNormalization())
+
+    # =======> Cuarta capa convolucional <=======
+    # Otra capa Conv2D con los mismos parámetros que la anterior.
+    model.add(Conv2D(filters=64, kernel_size=(3, 3), input_shape=(32, 32, 3), activation='relu', padding='same'))
+    model.add(BatchNormalization())
+
+    # =======> Segunda capa de max-pooling <=======
+    # Reducimos aún más las dimensiones con otra capa MaxPooling2D.
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    # =======> Dropout <=======
+    # Aplicamos nuevamente Dropout, apagando el 25% de las neuronas para reducir el sobreajuste.
+    model.add(Dropout(0.25))
+
+    # =======> Quinta capa convolucional <=======
+    # Aumentamos los filtros a 128, ya que estamos aprendiendo características aún más complejas.
+    model.add(Conv2D(filters=128, kernel_size=(3, 3), input_shape=(32, 32, 3), activation='relu', padding='same'))
+    model.add(BatchNormalization())
+
+    # =======> Sexta capa convolucional <=======
+    # Otra capa Conv2D con 128 filtros y los mismos parámetros.
+    model.add(Conv2D(filters=128, kernel_size=(3, 3), input_shape=(32, 32, 3), activation='relu', padding='same'))
+    model.add(BatchNormalization())
+
+    # =======> Tercera capa de max-pooling <=======
+    # Reducimos las dimensiones nuevamente con MaxPooling2D.
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    # =======> Dropout <=======
+    # Aplicamos Dropout con 25% para reducir el sobreajuste en esta etapa final de extracción de características.
+    model.add(Dropout(0.25))
+
 
 def deep_learning():
     """Función principal que ejecuta los distintos métodos para explorar y visualizar el dataset."""
