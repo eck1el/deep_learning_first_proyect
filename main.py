@@ -2,6 +2,7 @@
 import ssl
 
 import numpy as np
+import tensorflow as tf
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -168,6 +169,26 @@ def crearRedNeuronal():
     # =======> Dropout <=======
     # Aplicamos Dropout con 25% para reducir el sobreajuste en esta etapa final de extracción de características.
     model.add(Dropout(0.25))
+
+    #Añadimos capa Flatten. Utilizada para hacer que la entrada multidimensional sea unidimensinal,
+    #Comunmente utilizada en la transicion de la capa de convolucion a la capa final
+    model.add(Flatten())
+    model.add(Dense(128, activation='relu'))
+    model.add(Dropout(0.25))
+
+    #Añadimos una capa final softmax para que podamos clasificar las imagenes
+    #Tenemos que indicar el numero de clases que tiene el problema
+    model.add(Dense(10, activation='softmax'))
+
+    #Compilamos el modelo
+    METRICS = [
+        'accuracy',
+        tf.keras.metrics.Precision(name='precision'),
+        tf.keras.metrics.Recall(name='recall')
+    ]
+
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=METRICS)
+    model.summary()
 
 
 def deep_learning():
