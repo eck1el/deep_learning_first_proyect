@@ -178,6 +178,7 @@ def crearRedNeuronal():
 
     #Añadimos una capa final softmax para que podamos clasificar las imagenes
     #Tenemos que indicar el numero de clases que tiene el problema
+    #Este trabajador toma las decisiones(decide entre las 10 categorias cual es el resultado)
     model.add(Dense(10, activation='softmax'))
 
     #Compilamos el modelo
@@ -187,6 +188,8 @@ def crearRedNeuronal():
         tf.keras.metrics.Recall(name='recall')
     ]
 
+    #Este es como el entrenador del equipo
+    #Este entrenador se va a asegurar que todas las capas entrenen de la mejor manera posible
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=METRICS)
     model.summary()
 
