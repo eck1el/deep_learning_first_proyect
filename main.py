@@ -221,6 +221,24 @@ def entrenar(X_test, y_categorical_test, X_train, y_categorical_train):
                   validation_data = (X_test, y_categorical_test),
                   )
     print("--- Tiempo: %d:%.2d minutes ---" % divmod(time.time() - start_time, 60))
+    historico(r)
+
+def historico(r):
+    #la variable r nos permite crear un historico
+    loss_hist = r.history['val_loss']
+    acc_hist = r.history['val_accuracy']
+    print(f"val_loss->{len(loss_hist)} -> {min(loss_hist)} -> {max(loss_hist)}")
+    print(f"acc_hist ->{len(acc_hist)} -> {min(acc_hist)} -> {max(acc_hist)}")
+
+
+def guardar_modelo_deep_learning_opcion1():
+    from tensorflow.keras.models import load_model
+    model.save('cnn_50_epochs.h5')
+
+def guardar_modelo_deep_learning_opcion2():
+    import h5py
+    with h5py.File('cnn_50_epoch_v2.h5', 'w') as f:
+        model.save(f)
 
 
 def deep_learning():
@@ -230,6 +248,8 @@ def deep_learning():
     #distribucionClasesEntrenamiento()
     #distribucionClasesTest()
     preprocesadoDatos()
+    guardar_modelo_deep_learning_opcion1()
+    guardar_modelo_deep_learning_opcion2()
 
 
 # Press the green button in the gutter to run the script.
