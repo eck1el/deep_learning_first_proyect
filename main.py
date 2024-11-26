@@ -1,8 +1,10 @@
 #Esta libreria funciona para poder conectarse con la url de manera segura
 import ssl
+import time
 
 import numpy as np
 import tensorflow as tf
+from keras.src.models import model
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -16,6 +18,8 @@ from tensorflow.keras.utils import to_categorical
 
 from tensorflow.keras.models import Sequential  # Importamos Sequential para construir el modelo
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, BatchNormalization, Dropout  # Capas necesarias para la CNN
+
+from tensorflow.keras.callbacks import EarlyStopping
 
 # Deshabilitamos la verificación de SSL para evitar errores de certificado
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -99,6 +103,10 @@ def preprocesadoDatos():
     print(y_categorical_test)
     print("--------------------------------")
     print(y_train)
+
+    crearRedNeuronal()
+    entrenar(X_test, y_categorical_test, X_train, y_categorical_train)
+
 
 def crearRedNeuronal():
     #Inicializamos el modelo como un modelo secuencial CNN
@@ -190,8 +198,29 @@ def crearRedNeuronal():
 
     #Este es como el entrenador del equipo
     #Este entrenador se va a asegurar que todas las capas entrenen de la mejor manera posible
+    #patience = 2 significa 2 epocas y esto lo que hace es que verifica 2 veces si el entrenamiento debe detenerse
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=METRICS)
+
+    #Decide cuantas veces debe de entrenar para dar un mejor resultado
+    early_stop = EarlyStopping(monitor='val_loss', patience=2)
     model.summary()
+
+def entrenar(X_test, y_categorical_test, X_train, y_categorical_train):
+    from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+    #Aqui creamos mas imagenes para entrenamiento basado en las imagenes que ya tenemos pero rotandolas para que se van un poco diferente
+    batch_size = 32
+    data_generator = ImageDataGenerator(width_shift_range = 0.1, height_shift_range=0.1, horizontal_flip=True)
+    train_generator = data_generator.flow(X_train, y_categorical_train, batch_size)
+    steps_per_epoch = X_train.shape[0] // batch_size
+
+    start_time = time.time()
+    r = model.fit(train_generator,
+                  epochs = 50,
+                  steps_per_epoch = steps_per_epoch,
+                  validation_data = (X_test, y_categorical_test),
+                  )
+    print("--- Tiempo: %d:%.2d minutes ---" % divmod(time.time() - start_time, 60))
 
 
 def deep_learning():
@@ -201,7 +230,7 @@ def deep_learning():
     #distribucionClasesEntrenamiento()
     #distribucionClasesTest()
     preprocesadoDatos()
-    crearRedNeuronal()
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
