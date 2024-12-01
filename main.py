@@ -4,7 +4,7 @@ import time
 
 import numpy as np
 import tensorflow as tf
-from keras.src.models import model
+
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -222,6 +222,11 @@ def entrenar(X_test, y_categorical_test, X_train, y_categorical_train):
                   )
     print("--- Tiempo: %d:%.2d minutes ---" % divmod(time.time() - start_time, 60))
     historico(r)
+    guardar_modelo_deep_learning_opcion1()
+    guardar_modelo_deep_learning_opcion2()
+    evaluamos_modelo(r)
+    mostramos_porcentaje_precision(X_test, y_categorical_test)
+    creamos_matriz_confusion(X_test)
 
 def historico(r):
     #la variable r nos permite crear un historico
@@ -241,6 +246,64 @@ def guardar_modelo_deep_learning_opcion2():
         model.save(f)
 
 
+def evaluamos_modelo(r):
+    #Mostraremos 4 graficos de la evolucion de las funciones
+    #loss, precision, accuracy y recall
+    plt.figure(figsize=(12, 16))
+
+    #La perdida
+    #Es una de las metricas principales para evaluar un modelo
+    plt.subplot(4, 2, 1)
+    plt.plot(r.history['loss'], label='Loss')
+    plt.plot(r.history['val_loss'], label="val_Loss")
+    plt.title('Loss Function Evolution')
+    plt.legend()
+
+    #Precision
+    #Nos mide la calidad de la prediccion
+    plt.subplot(4, 2, 3)
+    plt.plot(r.history['precision'], label=['accuracy'])
+    plt.plot(r.history['val_precision'], label='val_precision')
+    plt.title('Precision Function Evolution')
+    plt.legend()
+
+    #Recall
+    #Nos indica la cantidad de veces que esta acertando
+    plt.subplot(4, 2, 4)
+    plt.plot(r.history['recall'], label=['recall'])
+    plt.plot(r.history['val_recall'], label='val_recall')
+    plt.title('Recall Function Evolution')
+    plt.legend()
+
+    #Accuracy
+    #Es solo para corroborar los datos de los otros graficos
+    #Entre mas nos acerquemos a 1 es mejor
+    plt.subplot(4, 2, 2)
+    plt.plot(r.history['accuracy'], label='accuracy')
+    plt.plot(r.history['val_accuracy'], label='val_accuracy')
+    plt.title('Accuracy Function Evolution')
+    plt.legend()
+
+def mostramos_porcentaje_precision(X_test, y_categorical_test):
+    #Mostramos el % de precision basado en el accuracy
+    evaluation = model.evakuate(X_test, y_categorical_test)
+    print(f'Test Accuracy : {evaluation[1]*100:.2f}%')
+
+def creamos_matriz_confusion(X_test):
+    from sklearn.metrics import classification_report, confusion_matrix
+    from sklearn.metrics import confusionMatrixDisplay
+
+    y_pred = model.predict(X_test)
+    y_pred = np.argmax(y_pred, axis=1)
+
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+    fig, ax = plt.subplots(figsize=(10, 10))
+    disp = disp.plot(xticks_rotation='vertical', ax=ax, cmap='summer')
+
+    plt.show()
+
+
+
 def deep_learning():
     """Función principal que ejecuta los distintos métodos para explorar y visualizar el dataset."""
     #probarDataset()
@@ -248,8 +311,10 @@ def deep_learning():
     #distribucionClasesEntrenamiento()
     #distribucionClasesTest()
     preprocesadoDatos()
-    guardar_modelo_deep_learning_opcion1()
-    guardar_modelo_deep_learning_opcion2()
+
+
+
+
 
 
 # Press the green button in the gutter to run the script.
