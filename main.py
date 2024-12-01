@@ -359,12 +359,54 @@ def probamos_dataset_completo(y_pred):
     #Obtenemos las predicciones
     predictions = model.predict(X_test)
 
+    imagen_con_grafica(predictions)
 
 
+def imagen_con_grafica(predictions):
+    def plot_image(i, predictions_array, true_label, img, labels):
+        # Aqui generamos una visualizacion de las predicciones con cada imagen y un grafico a la par
+        # Si la prediccion es correcta me lo muestra en azul y con que categoria, y si fue erronea(rojo)
+        # Esto tambien me va a indicar con cual categoria se equivoco
+        predictions_array, true_label, img = predictions_array, true_label[i], img[i]
+        plt.grid(False)
+        plt.xticks([])
+        plt.yticks([])
 
+        plt.imshow(img, cmap=plt.cm.binary)
 
+        predicted_label = np.argmax(predictions_array)
+        if predicted_label == true_label:
+            color = 'blue'
+        else:
+            color = 'red'
 
+        plt.xlabel(
+            f"{labels[int(predicted_label)]} {100 * np.max(predictions_array):2.0f}% ({labels[int(true_label)]})",
+            color=color)
 
+    def plot_value_array(i, predictions_array, true_label):
+        predictions_array, true_label = predictions_array, int(true_label[i])
+        plt.grid(False)
+        plt.xticks(range(10))
+        plt.yticks([])
+        thisplot = plt.bar(range(10), predictions_array, color="#777777")
+        plt.ylim([0, 1])
+        predicted_label = np.argmax(predictions_array)
+
+        thisplot[predicted_label].set_color('red')
+        thisplot[true_label].set_color('blue')
+
+    num_rows = 8
+    num_cols = 5
+    num_images = num_rows * num_cols
+    plt.figure(figsize=(2 * 2 * num_cols, 2 * num_rows))
+    for i in range(num_images):
+        plt.subplot(num_rows)
+        plot_image(i, predictions[i], y_test, X_test)
+        plt.subplot(num_rows, 2*num_cols, 2*i+2)
+        plot_value_array(i, predictions[i], y_test)
+    plt.tight_layout()
+    plt.show()
 
 
 def deep_learning():
@@ -374,8 +416,6 @@ def deep_learning():
     #distribucionClasesEntrenamiento()
     #distribucionClasesTest()
     preprocesadoDatos()
-
-
 
 
 
