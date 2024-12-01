@@ -310,7 +310,17 @@ def classification_report(y_test, y_pred):
     #obtenemos los valores de precision, recall, f1-score y support para cada una de las categorias de prediccion(perros, gatos, etc)
     print(classification_report(y_test, y_pred))
 
+def probamos_imagen():
+    # cogemos la imagen 101 del conjunto de test solo como ejemplo
 
+    my_image = X_test[101]
+    plt.imshow(my_image)
+
+    #nos devuelve el numero de la categoria del animal que se predice
+    y_test[101]
+
+    #predecimos el animal nuevamente mostrando el numero de categoria de animal que es
+    np.argmax(model.predict(my_image.reshape(1, 32, 32, 3)))
 
 def deep_learning():
     """Función principal que ejecuta los distintos métodos para explorar y visualizar el dataset."""
