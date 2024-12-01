@@ -228,6 +228,7 @@ def entrenar(X_test, y_categorical_test, X_train, y_categorical_train):
     mostramos_porcentaje_precision(X_test, y_categorical_test)
     creamos_matriz_confusion(X_test, y_test)
 
+
 def historico(r):
     #la variable r nos permite crear un historico
     loss_hist = r.history['val_loss']
@@ -302,15 +303,19 @@ def creamos_matriz_confusion(X_test, y_test):
 
     plt.show()
 
-    classification_report(y_test, y_pred)
+    classification_report(X_test, y_test, y_pred)
 
 
-def classification_report(y_test, y_pred):
+def classification_report(X_test, y_test, y_pred):
     #classification report
     #obtenemos los valores de precision, recall, f1-score y support para cada una de las categorias de prediccion(perros, gatos, etc)
     print(classification_report(y_test, y_pred))
 
-def probamos_imagen():
+    probamos_imagen(X_test, y_test)
+    probamos_dataset_completo(y_pred)
+
+def probamos_imagen(X_test, y_test):
+    # Aqui lo que estamos haciendo es una validacion individual con una sola imagen
     # cogemos la imagen 101 del conjunto de test solo como ejemplo
 
     my_image = X_test[101]
@@ -321,6 +326,46 @@ def probamos_imagen():
 
     #predecimos el animal nuevamente mostrando el numero de categoria de animal que es
     np.argmax(model.predict(my_image.reshape(1, 32, 32, 3)))
+
+
+def probamos_dataset_completo(y_pred):
+    #Tambien tenemos esta forma para probar todo el dataset
+    #Definimos las etiquetas o clases de nuestro problema
+    #Nombre común: Labels
+    labels = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+
+    # Configuramos una cuadrícula de 10x10 para mostrar imágenes aleatorias
+    W_grid, L_grid = 10, 10
+    fig, axes = plt.subplots(L_grid, W_grid, figsize=(17, 17))
+    axes = axes.ravel()  # Aplanamos el array de ejes
+
+    #obtenemos el tamaño del dataset de pruebas
+    n_test = len(X_test)
+
+    #Recorremos la matriz de imagenes
+    for i in np.arange(0, W_grid * L_grid):
+        #Seleccionamos un numero aleatorio entre 0 y n_test
+        index = np.random.randint(0, n_test)
+
+        #Leer y mostrar la imagen con el indice seleccionado
+        axes[i].imshow(X_test[index,1:])
+        label_index = int(y_pred[index])
+        axes[i].set_title(labels[label_index], fontsize = 8)
+        axes[i].axis('off')
+
+    #Ajustar los espacios entre las iamgenes de la matriz resultante
+    plt.subplots_adjust(hspace=0.4)
+
+    #Obtenemos las predicciones
+    predictions = model.predict(X_test)
+
+
+
+
+
+
+
+
 
 def deep_learning():
     """Función principal que ejecuta los distintos métodos para explorar y visualizar el dataset."""
