@@ -226,7 +226,7 @@ def entrenar(X_test, y_categorical_test, X_train, y_categorical_train):
     guardar_modelo_deep_learning_opcion2()
     evaluamos_modelo(r)
     mostramos_porcentaje_precision(X_test, y_categorical_test)
-    creamos_matriz_confusion(X_test)
+    creamos_matriz_confusion(X_test, y_test)
 
 def historico(r):
     #la variable r nos permite crear un historico
@@ -289,7 +289,7 @@ def mostramos_porcentaje_precision(X_test, y_categorical_test):
     evaluation = model.evakuate(X_test, y_categorical_test)
     print(f'Test Accuracy : {evaluation[1]*100:.2f}%')
 
-def creamos_matriz_confusion(X_test):
+def creamos_matriz_confusion(X_test, y_test):
     from sklearn.metrics import classification_report, confusion_matrix
     from sklearn.metrics import confusionMatrixDisplay
 
@@ -301,6 +301,14 @@ def creamos_matriz_confusion(X_test):
     disp = disp.plot(xticks_rotation='vertical', ax=ax, cmap='summer')
 
     plt.show()
+
+    classification_report(y_test, y_pred)
+
+
+def classification_report(y_test, y_pred):
+    #classification report
+    #obtenemos los valores de precision, recall, f1-score y support para cada una de las categorias de prediccion(perros, gatos, etc)
+    print(classification_report(y_test, y_pred))
 
 
 
