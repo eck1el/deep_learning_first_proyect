@@ -409,6 +409,17 @@ def imagen_con_grafica(predictions):
     plt.show()
 
 
+def probar_modelo_con_imagenes_nuevas():
+    from skimage.transform import resize
+    #Aqui es realmente donde probamos si el modelo funciona
+    my_image = plt.imread("cats_1000/cat.0.jpg")
+    my_image_resized = resize(my_image, 32, 32, 3)
+    img = plt.imshow(my_image_resized)
+    probabilities = model.predict(np.array([my_image_resized,]))
+    print(probabilities)
+
+    number_to_class =
+
 def deep_learning():
     """Función principal que ejecuta los distintos métodos para explorar y visualizar el dataset."""
     #probarDataset()
